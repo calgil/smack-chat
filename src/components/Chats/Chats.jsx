@@ -78,7 +78,7 @@ const Chats = ({ chats }) => {
                     <div key={msg.id} className="chat-message">
                         <UserAvatar 
                             avatar={{ 
-                                avatarName: msg.userAvatarName, 
+                                avatarName: msg.userAvatar, 
                                 avatarColor: msg.userAvatarColor
                             }} 
                             size="md" 

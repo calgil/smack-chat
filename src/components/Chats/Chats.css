@@ -16,13 +16,7 @@
 
 .chat-list {
     overflow-y: scroll;
-    height: calc(100vh - 60px);
-    padding-bottom: 50px;
-    position: absolute;
-    top: 50px;
-    left: 10px;
-    right: 10px;
-    bottom: 60px;
+    height: calc(100vh - 250px);
 }
 
 .chat-message {

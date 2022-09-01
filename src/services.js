@@ -224,7 +224,7 @@ export class SocketService {
         this.socket.on('messageCreated', (messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp) => {
             const channel = this.chatService.getSelectedChannel();
             const chat = { messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp };
-            this.chatService.addMessage(chat);
+            // this.chatService.addMessage(chat); // I removed this to stop duplicate messages. not sure what the deal is ??
 
             if (channelId !== channel.id && !this.chatService.unreadChannels.includes(channelId)) {
                 this.chatService.addToUnread(channelId);
