@@ -150,7 +150,10 @@ export class ChatService {
     }
 
     addChannel = (channel) => this.channels.push(channel);
-    addMessage = (chat) => this.messages.push(chat);
+    addMessage = (chat) => {
+        console.log('chat add message');
+        this.messages.push(chat);
+    }
     setSelectedChannel = (channel) => this.selectedChannel = channel;
     getSelectedChannel = () => this.selectedChannel;
     getAllChannels = () => this.channels;
@@ -233,18 +236,21 @@ export class SocketService {
     }
 
     addMessage(messageBody, channelId, user) {
+        
         const { userName, userId, userAvatar, userAvatarColor } = user;
         if(!!messageBody && !!channelId && !!user) {
             this.socket.emit('newMessage', messageBody, userId, channelId, userName, userAvatar, userAvatarColor);
+            console.log('add');
         }
     }
 
     getChatMessage(cb) {
+        console.log('get');
         this.socket.on('messageCreated', (messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp) => {
             const channel = this.chatService.getSelectedChannel();
             const chat = { messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp };
-            // this.chatService.addMessage(chat); 
-            // I removed this to stop duplicate messages. not sure what the deal is ??
+            this.chatService.addMessage(chat); 
+            console.log('add inside');
 
             if (channelId !== channel.id && !this.chatService.unreadChannels.includes(channelId)) {
                 this.chatService.addToUnread(channelId);

@@ -28,18 +28,19 @@ const UserUpdate = ({ ...props }) => {
         setUpdateUserInfo({...updateUserInfo, avatarColor: `#${randomColor}` });
     }
 
-    const handleUpdate = ({ target: { name, value }}) => {
-        setUpdateUserInfo({...updateUserInfo, [name]: value});
+    const onChange = ({ target: { name, value }}) => {
+        setUpdateUserInfo({ ...updateUserInfo, [name]: value });
     }
 
     const updateUser = (e) => {
         e.preventDefault();
         const { _id, userName, email, avatarName, avatarColor } = updateUserInfo;
         if (!!userName && !!email) {
-            authService.updateUser(_id, userName, email, avatarName, avatarColor);
+            authService.updateUser(_id, userName, email, avatarName, avatarColor).then(() => {
+                props.setEditMode(false);
+                props.setModal(false);
+            })
         }
-        props.setEditMode(false);
-        // setModal(false);
     }
 
     return (
@@ -67,16 +68,16 @@ const UserUpdate = ({ ...props }) => {
                 type="text" 
                 placeholder="new username" 
                 name='userName'
-                onChange={handleUpdate}
+                onChange={onChange}
             />
             <input 
                 className="form-control" 
                 type="text" 
                 placeholder="new email" 
                 name='email'
-                onChange={handleUpdate}
+                onChange={onChange}
             />
-            <input type="submit" value="Save" />
+            <input className="submit-btn" type="submit" value="Save" />
             {/* <button className="submit-btn">Save</button> */}
             </form>
         </div>

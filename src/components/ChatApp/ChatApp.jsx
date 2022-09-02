@@ -1,17 +1,15 @@
 import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../App";
 import Modal from "../Modal/Modal";
-// import AvatarModal from "../AvatarModal/AvatarModal";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import './ChatApp.css';
 import { useNavigate } from "react-router-dom";
 import Channels from "../Channels/Channels";
 import Chats from "../Chats/Chats";
 import UserUpdate from "../../UserUpdate/UserUpdate";
-// import { generateBgColor } from "../helpers/generateBgColor";
-
 
 const ChatApp = () => {
+
     const { authService, socketService, chatService } = useContext(UserContext);
     const navigate = useNavigate();
     const [modal, setModal] = useState(false);
@@ -74,7 +72,8 @@ const ChatApp = () => {
                 </button>
                     { editMode
                         ?   <UserUpdate 
-                            setEditMode={setEditMode}
+                                setEditMode={setEditMode}
+                                setModal={setModal}
                             />
                         : <div className="profile">
                             <UserAvatar />
