@@ -1,15 +1,16 @@
 import React, { useState, useContext } from "react";
-// import PropTypes from 'prop-types';
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import Modal from "../Modal/Modal";
+// import Modal from "../Modal/Modal";
+import AvatarModal from "../AvatarModal/AvatarModal";
 import './UserCreate.css';
-import { AVATARS_DARK, AVATARS_LIGHT } from "../../constants";
+// import { AVATARS_DARK, AVATARS_LIGHT } from "../../constants"; // ||* copied
 import { UserContext } from "../../App";
 import Alert from "../Alert/Alert";
 import UserAvatar from "../UserAvatar/UserAvatar";
+import { generateBgColor } from "../helpers/generateBgColor";
 
 
-const UserCreate = ({ history }) => {
+const UserCreate = () => {
     const { authService } = useContext(UserContext);
     const INIT_STATE = {
         userName: '',
@@ -19,11 +20,9 @@ const UserCreate = ({ history }) => {
         avatarColor: 'none',
     }
     const [userInfo, setUserInfo] = useState(INIT_STATE);
-    const [modal, setModal] = useState(false);
+    const [avatarModal, setAvatarModal] = useState(false);
     const [error, setError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [avatarTheme, setAvatarTheme] = useState(true);
-    const [avatarArray, setAvatarArray] = useState(AVATARS_DARK);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -32,23 +31,13 @@ const UserCreate = ({ history }) => {
         setUserInfo({ ...userInfo, [name]: value });
     }
 
-    const dark = () => {
-        setAvatarTheme(true);
-        setAvatarArray(AVATARS_DARK);
-    }
-
-    const light = () => {
-        setAvatarTheme(false);
-        setAvatarArray(AVATARS_LIGHT);
-    }
-
     const chooseAvatar = (avatar) => {
         setUserInfo({ ...userInfo, avatarName: avatar });
-        setModal(false);
+        setAvatarModal(false);
     }
 
-    const generateBgColor = () => {
-        const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const updateColor = () => {
+        const randomColor = generateBgColor();
         setUserInfo({ ...userInfo, avatarColor: `#${randomColor}` });
     }
 
@@ -118,37 +107,19 @@ const UserCreate = ({ history }) => {
                         avatar={{ avatarName, avatarColor }}
                         className="create-avatar" 
                     />
-                    <div onClick={() => setModal(true)} className="avatar-text">Choose Avatar</div>
-                    <div onClick={generateBgColor} className="avatar-text">Generate background color</div>
+                    <div onClick={() => setAvatarModal(true)} className="avatar-text">Choose Avatar</div>
+                    <div onClick={updateColor} className="avatar-text">Generate background color</div>
                 </div>
                 <input className="submit-btn" type="submit" value="Create Account" />
             </form>
             <div className="footer-text">Already have an Account Login <Link to="/login">HERE</Link></div>
         </div>
-    
-        <Modal 
-            title="Choose Avatar" 
-            isOpen={modal} 
-            close={() => setModal(false)}
-            avatar={true}
-            avatarTheme={avatarTheme}
-            dark={dark}
-            light={light}
-        >
-            <div className={`avatar-list ${!avatarTheme ? 'light' : null}`}>  
-            {
-                avatarArray.map((img) => (
-                    <div 
-                        role="presentation" 
-                        key={img} className={`create-avatar ${avatarTheme ? 'dark' : 'light'}`} 
-                        onClick={() => chooseAvatar(img)}
-                    >
-                        <img src={img} alt="avatar" />
-                    </div>
-                ))
-            }
-            </div>
-        </Modal>
+        <AvatarModal 
+            isOpen={avatarModal}
+            close={() => setAvatarModal(false)}
+            edit={false}
+            chooseAvatar={chooseAvatar}
+        />
         </>
     );
 }

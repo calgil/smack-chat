@@ -88,6 +88,7 @@ export class AuthService extends User {
         }
         try {
             const response = await axios.post(URL_USER_ADD, body, { headers });
+            console.log('created', response.data);
             this.setUserData(response.data);
         } catch (error) {
             console.error(error);
@@ -110,13 +111,31 @@ export class AuthService extends User {
         }
     }
 
-    async findUserByEmail() {
+    async findUserByEmail(email = this.email) {
         const headers = this.getBearerHeader();
         try {
-            const response = await axios.get(URL_USER_BY_EMAIL + this.email, { headers });
+            const response = await axios.get(URL_USER_BY_EMAIL + email.toLowerCase(), { headers });
             this.setUserData(response.data);
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    async updateUser(_id, name, email, avatarName, avatarColor) {
+        const headers = this.getBearerHeader();
+        const body = {
+            "name": name,
+            "email": email,
+            "avatarName": avatarName,
+            "avatarColor": avatarColor,
+        }
+        try {
+            await axios.put(`${URL_USER}/${this.id}`, body, { headers });
+            await this.findUserByEmail(email);
+            
+        } catch (error) {
+            console.error(error);
+            throw error;
         }
     }
 }
@@ -224,7 +243,8 @@ export class SocketService {
         this.socket.on('messageCreated', (messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp) => {
             const channel = this.chatService.getSelectedChannel();
             const chat = { messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp };
-            // this.chatService.addMessage(chat); // I removed this to stop duplicate messages. not sure what the deal is ??
+            // this.chatService.addMessage(chat); 
+            // I removed this to stop duplicate messages. not sure what the deal is ??
 
             if (channelId !== channel.id && !this.chatService.unreadChannels.includes(channelId)) {
                 this.chatService.addToUnread(channelId);

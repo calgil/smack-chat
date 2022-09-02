@@ -15,7 +15,7 @@ const Modal = ({ ...props }) => {
                         <h5 className="modal-title">{title}</h5>
                         <button onClick={() => close(false)} className="close">&times;</button>
                     </div>
-                    {avatar && 
+                    {/* {avatar && 
                             <div className="theme-container">
                                 <button
                                     className={avatarTheme ? 'active' : 'inactive'}
@@ -30,7 +30,7 @@ const Modal = ({ ...props }) => {
                                     Light
                                 </button>
                             </div>
-                        }
+                        } */}
                     <div className="modal-body">
                         {children}
                     </div>
