@@ -26,7 +26,6 @@ const AuthProvider = ({ children }) => {
     appSetChannel: (ch) => {
       setAuthContext({ ...authContext, appSelectedChannel: ch });
       chatService.setSelectedChannel(ch);
-      // update messageService,
     }
   }
 

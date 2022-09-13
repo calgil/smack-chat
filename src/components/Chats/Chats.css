@@ -33,6 +33,31 @@
     padding-left: 10px;
 }
 
+.message-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px 10px 0;
+}
+
+.update-message {
+    display: flex;
+    align-items: center;
+    margin-left: 35px;
+}
+
+.update-message span {
+    margin: 0 5px;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.update-message span:hover {
+    opacity: 1;
+    /* font-weight: bold; */
+    /* color: black; */
+    cursor: pointer;
+}
+
 .chat-bar {
     position: absolute;
     bottom: 0;

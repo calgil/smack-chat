@@ -12,7 +12,8 @@ const URL_USER_ADD = `${URL_USER}/add`
 
 const URL_GET_CHANNELS = `${BASE_URL}/channel`
 
-const URL_GET_MESSAGES = `${BASE_URL}/message/byChannel/`;
+const URL_MESSAGE = `${BASE_URL}/message/`
+const URL_GET_MESSAGES = `${URL_MESSAGE}byChannel/`;
 
 const headers = { 'Content-Type': 'application/json' };
 
@@ -121,7 +122,7 @@ export class AuthService extends User {
         }
     }
 
-    async updateUser(_id, name, email, avatarName, avatarColor) {
+    async updateUser( name, email, avatarName, avatarColor) {
         const headers = this.getBearerHeader();
         const body = {
             "name": name,
@@ -150,10 +151,7 @@ export class ChatService {
     }
 
     addChannel = (channel) => this.channels.push(channel);
-    addMessage = (chat) => {
-        console.log('chat add message');
-        this.messages.push(chat);
-    }
+    addMessage = (chat) => this.messages.push(chat);
     setSelectedChannel = (channel) => this.selectedChannel = channel;
     getSelectedChannel = () => this.selectedChannel;
     getAllChannels = () => this.channels;
@@ -194,6 +192,7 @@ export class ChatService {
                 channelId: msg.channelId,
                 id: msg._id,
                 userName: msg.userName,
+                userId: msg.userId,
                 userAvatar: msg.userAvatar,
                 userAvatarColor: msg.userAvatarColor,
                 timeStamp: msg.timeStamp,
@@ -205,6 +204,34 @@ export class ChatService {
             this.messages = [];
             throw error;
         }
+    }
+
+     async updateChatMessage(messageId, messageBody, userId, channelId, userName, userAvatar, userAvatarColor) {
+        const headers = this.getAuthHeader();
+        const body = {
+            "messageBody": messageBody,
+            "userId": userId,
+            "channelId": channelId,
+            "userName": userName,
+            "userAvatar": userAvatar,
+            "userAvatarColor": userAvatarColor,
+        }
+        try {
+            await axios.put(`${URL_MESSAGE}${messageId}`, body, { headers });
+            // await this.findAllMessagesForChannel(channelId);
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+     updateUserMessages(user, channelId) {
+        const { id, userName, avatarName, avatarColor } = user;
+        let userMessages = this.messages.filter((msg) => msg.userId === id);
+            userMessages.map((msg) =>
+            this.updateChatMessage(msg.id, msg.messageBody, msg.userId, msg.channelId, userName, avatarName, avatarColor)
+            )
+            this.findAllMessagesForChannel(channelId);
     }
 }
 
@@ -236,26 +263,20 @@ export class SocketService {
     }
 
     addMessage(messageBody, channelId, user) {
-        
         const { userName, userId, userAvatar, userAvatarColor } = user;
         if(!!messageBody && !!channelId && !!user) {
             this.socket.emit('newMessage', messageBody, userId, channelId, userName, userAvatar, userAvatarColor);
-            console.log('add');
         }
     }
 
     getChatMessage(cb) {
-        console.log('get');
         this.socket.on('messageCreated', (messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp) => {
             const channel = this.chatService.getSelectedChannel();
             const chat = { messageBody, userId, channelId, userName, userAvatar, userAvatarColor, id, timeStamp };
-            this.chatService.addMessage(chat); 
-            console.log('add inside');
-
             if (channelId !== channel.id && !this.chatService.unreadChannels.includes(channelId)) {
                 this.chatService.addToUnread(channelId);
-            }
-            this.chatService.messages = [...this.chatService.messages, chat];            
+            } 
+            this.chatService.messages = [...this.chatService.messages, chat];
             cb(chat, this.chatService.messages);
         })
     }

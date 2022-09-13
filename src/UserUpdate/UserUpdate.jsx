@@ -4,12 +4,13 @@ import UserAvatar from "../components/UserAvatar/UserAvatar";
 import AvatarModal from "../components/AvatarModal/AvatarModal";
 import { UserContext } from "../App";
 import { generateBgColor } from "../components/helpers/generateBgColor";
+import { ChatService } from "../services";
 
-const UserUpdate = ({ ...props }) => {
-    const { authService } = useContext(UserContext);
+const UserUpdate = ({ setEditMode, setModal }) => {
+    const { authService, chatService, appSelectedChannel } = useContext(UserContext);
     const INIT_STATE_UPDATE = {
         id: authService.id,
-        name: authService.name,
+        userName: authService.name,
         email: authService.email,
         avatarName: authService.avatarName,
         avatarColor: authService.avatarColor,
@@ -34,12 +35,14 @@ const UserUpdate = ({ ...props }) => {
 
     const updateUser = (e) => {
         e.preventDefault();
-        const { _id, userName, email, avatarName, avatarColor } = updateUserInfo;
-        if (!!userName && !!email) {
-            authService.updateUser(_id, userName, email, avatarName, avatarColor).then(() => {
-                props.setEditMode(false);
-                props.setModal(false);
-            })
+        const { userName, email, avatarName, avatarColor } = updateUserInfo;
+        if (userName.length > 1) {
+            authService.updateUser(userName, email, avatarName, avatarColor).then(() => {
+                chatService.updateUserMessages(updateUserInfo, appSelectedChannel.id)
+                setEditMode(false);
+                setModal(false);
+            }).catch((err) => console.error(err))
+
         }
     }
 
@@ -78,7 +81,6 @@ const UserUpdate = ({ ...props }) => {
                 onChange={onChange}
             />
             <input className="submit-btn" type="submit" value="Save" />
-            {/* <button className="submit-btn">Save</button> */}
             </form>
         </div>
     )

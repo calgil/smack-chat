@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import './Chats.css';
 import { UserContext } from "../../App";
-import UserAvatar from "../UserAvatar/UserAvatar";
-import { formatDate } from "../helpers/dateFormat";
+import Message from "../Message/Message";
 
 const Chats = ({ chats }) => {
     const { authService, chatService, appSelectedChannel, socketService } = useContext(UserContext);
@@ -10,6 +9,10 @@ const Chats = ({ chats }) => {
     const [messageBody, setMessageBody] = useState('');
     const [typingMessage, setTypingMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+
+    // useEffect(() => {
+    //     console.log('chat render');
+    // }, [])
 
     useEffect(() => {
         setMessages(chats);
@@ -19,6 +22,7 @@ const Chats = ({ chats }) => {
         if(appSelectedChannel.id) {
             chatService.findAllMessagesForChannel(appSelectedChannel.id)
             .then((res) => setMessages(res));
+            
         }
     }, [appSelectedChannel]);
 
@@ -75,20 +79,10 @@ const Chats = ({ chats }) => {
             </div>
             <div className="chat-list">
                 {!!messages.length ? messages.map((msg) => (
-                    <div key={msg.id} className="chat-message">
-                        <UserAvatar 
-                            avatar={{ 
-                                avatarName: msg.userAvatar, 
-                                avatarColor: msg.userAvatarColor
-                            }} 
-                            size="md" 
-                        />
-                        <div className="chat-user">
-                            <strong>{msg.userName}</strong>
-                            <small>{formatDate(msg.timeStamp)}</small>
-                            <div className="message-body">{msg.messageBody}</div>
-                        </div>
-                    </div>
+                    <Message 
+                        key={msg.id}
+                        msg={msg}
+                    />
                 )) : <div>No Messages</div>}
                 
 

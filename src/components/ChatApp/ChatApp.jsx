@@ -10,7 +10,7 @@ import UserUpdate from "../../UserUpdate/UserUpdate";
 
 const ChatApp = () => {
 
-    const { authService, socketService, chatService } = useContext(UserContext);
+    const { authService, socketService, chatService, appSelectedChannel } = useContext(UserContext);
     const navigate = useNavigate();
     const [modal, setModal] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
@@ -32,6 +32,15 @@ const ChatApp = () => {
             }
         })
     }, []);
+
+    useEffect(() => {
+        console.log('get channel messages');
+        chatService.findAllMessagesForChannel(appSelectedChannel.id)
+        .then((res) => setChatMessages(res))
+        .catch((err) => console.error(err));
+
+    }, [editMode])
+
 
     const logoutUser = () => {
         authService.logoutUser();
